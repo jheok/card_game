@@ -40,22 +40,14 @@
         function increaseGridSize() {
             window.location.href = '/increaseGridSize';
         }
+
+        function decreaseGridSize() {
+            window.location.href = '/decreaseGridSize';
+        }
     </script>
 </head>
 <body>
 <h1>카드 맞추기 게임</h1>
-
-<div class="card-grid" style="--n: ${n}">
-    <div th:each="card, cardStat : ${cards}"
-         th:style="'grid-column: ' + ${((cardStat.index % n) + 1)} + ' / span 1; grid-row: ' + ${((cardStat.index / n) + 1)} + ' / span 1;'"
-    >
-        <div class="card"
-             th:class="'card' + (${card.flipped} ? ' flipped' : '') + (${card.matched} ? ' matched' : '')"
-             th:onclick="'javascript:flipCard(\'' + ${card.id} + '\');'">
-            <p th:text="${card.value}"></p>
-        </div>
-    </div>
-</div>
 
 <div>
     <h2>결과:</h2>
@@ -65,6 +57,19 @@
 
 <div>
     <button onclick="increaseGridSize()">그리드 크기 증가</button>
+    <button onclick="decreaseGridSize()">그리드 크기 감소</button>
 </div>
+
+<div class="card-grid" style="--n: ${n}">
+    <div th:each="card, cardStat : ${cards}"
+         th:style="'grid-column: ' + ${((cardStat.index % n) + 1)} + ' / span 1; grid-row: ' + ${((cardStat.index / n) + 1)} + ' / span 1;'">
+        <div class="card"
+             th:class="'card' + (${card.flipped} ? ' flipped' : '') + (${card.matched} ? ' matched' : '')"
+             th:onclick="'flipCard(' + ${card.id} + ');'">
+            <p th:text="${card.value}" th:if="${card.flipped || card.matched}"></p>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

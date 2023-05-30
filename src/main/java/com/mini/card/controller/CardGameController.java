@@ -12,71 +12,90 @@ import java.util.List;
 @Controller
 public class CardGameController {
 
-    private int n = 4; // 초기 그리드 열의 개수
+    private int n = 2;
     private List<Card> cards;
     private int matchingPairs;
     private int score;
+    private Card flippedCard;
 
     @GetMapping("/")
     public String game(Model model) {
-        // 게임 초기화
         initializeGame();
 
-        // 모델에 데이터 설정
         model.addAttribute("cards", cards);
         model.addAttribute("matchingPairs", matchingPairs);
         model.addAttribute("score", score);
-        model.addAttribute("n", n); // n 값을 전달
+        model.addAttribute("n", n);
 
-        // 템플릿 이름 반환
         return "game";
     }
 
     @GetMapping("/flipCard")
     public String flipCard(@RequestParam("cardId") int cardId, Model model) {
-        // 선택한 카드 뒤집기
-        flipCardById(cardId);
+        // 카드 뒤집기
+        Card selectedCard = getCardById(cardId);
+        if (selectedCard != null && !selectedCard.isFlipped() && !selectedCard.isMatched()) {
+            selectedCard.setFlipped(true);
 
-        // 모델에 데이터 설정
+            // 일치 여부 확인
+            if (flippedCard != null) {
+                if (flippedCard.getId() == selectedCard.getId()) {
+                    flippedCard.setMatched(true);
+                    selectedCard.setMatched(true);
+                    matchingPairs++;
+                } else {
+                    flippedCard.setFlipped(false);
+                    selectedCard.setFlipped(false);
+                }
+                flippedCard = null;
+            } else {
+                flippedCard = selectedCard;
+            }
+        }
+
         model.addAttribute("cards", cards);
         model.addAttribute("matchingPairs", matchingPairs);
         model.addAttribute("score", score);
-        model.addAttribute("n", n); // n 값을 전달
+        model.addAttribute("n", n);
 
-        // 템플릿 이름 반환
         return "game";
     }
 
     @GetMapping("/increaseGridSize")
     public String increaseGridSize() {
-        n++;
+        n += 2;
+        return "redirect:/";
+    }
+
+    @GetMapping("/decreaseGridSize")
+    public String decreaseGridSize() {
+        if (n > 2) {
+            n -= 2;
+        }
         return "redirect:/";
     }
 
     private void initializeGame() {
-        // 게임 초기화 로직 작성
-
-        // 예시를 위해 더미 데이터로 카드 생성
         cards = new ArrayList<>();
-        for (int i = 1; i <= n*2; i++) {
-            cards.add(new Card(i, "Card " + i));
-            cards.add(new Card(i, "Card " + i));
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+                Card cc = new Card(((i - 1) * n + j), "Card " + ((i - 1) * n + j));
+                cards.add(cc);
+                System.out.println("j = " + cc);
+            }
         }
 
         matchingPairs = 0;
         score = 0;
     }
 
-    private void flipCardById(int cardId) {
-        // 선택한 카드 뒤집기 로직 작성
-
-        // 예시를 위해 더미 데이터를 업데이트
+    private Card getCardById(int cardId) {
         for (Card card : cards) {
             if (card.getId() == cardId) {
-                card.setFlipped(!card.isFlipped());
-                break;
+                return card;
             }
         }
+        return null;
     }
 }
 
