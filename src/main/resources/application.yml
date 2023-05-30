@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:mariadb://host:port/card?createDatabaseIfNotExist=true
+    username: root
+    password: passwd
+    driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    properties:
+      hibernate:
+        default_batch_fetch_size: 50
+        show_sql: true
+        format_sql: true
+
+file:
+  dir: /Users/jheok/Desktop/mini/card/src/resources/static/
